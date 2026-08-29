@@ -1,0 +1,20 @@
+# Python
+backend/venv/
+backend/__pycache__/
+backend/**/__pycache__/
+*.pyc
+
+# Database & generated data
+backend/data/esentiment.db
+backend/data/reports/
+backend/model/*.joblib
+backend/model/meta.json
+backend/model/metrics.json
+
+# Node
+frontend/node_modules/
+frontend/dist/
+
+# Env
+.env
+.DS_Store

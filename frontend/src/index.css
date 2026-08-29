@@ -1,0 +1,78 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Fraunces", "Georgia", serif;
+  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+  --font-mono: "IBM Plex Mono", "SFMono-Regular", monospace;
+
+  --color-ink-950: #0a1a2e;
+  --color-ink-900: #0f2544;
+  --color-ink-800: #17335c;
+  --color-ink-700: #234270;
+  --color-ink-600: #3a5a8c;
+  --color-ink-500: #5b6b82;
+  --color-ink-400: #8393a8;
+  --color-ink-300: #aab6c7;
+  --color-ink-200: #d3dae4;
+  --color-ink-100: #e6eaf0;
+
+  --color-paper-0: #ffffff;
+  --color-paper-50: #f7f9fb;
+  --color-paper-100: #f0f3f7;
+  --color-paper-200: #e1e7ef;
+
+  --color-teal-700: #0a616a;
+  --color-teal-600: #0e7c86;
+  --color-teal-500: #14939e;
+  --color-teal-100: #dcf0f1;
+  --color-teal-50: #eff8f9;
+
+  --color-positive: #16a34a;
+  --color-positive-bg: #eaf7ef;
+  --color-negative: #dc2626;
+  --color-negative-bg: #fdedec;
+  --color-neutral: #d97706;
+  --color-neutral-bg: #fdf3e3;
+}
+
+html {
+  font-family: var(--font-sans);
+}
+
+body {
+  background-color: var(--color-paper-50);
+  color: var(--color-ink-900);
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+.font-mono-data {
+  font-family: var(--font-mono);
+}
+
+::selection {
+  background-color: var(--color-teal-100);
+  color: var(--color-ink-900);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-ink-200) transparent;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in {
+  animation: fade-in 0.25s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
