@@ -7,6 +7,7 @@ from fastapi.staticfiles import StaticFiles
 from .database import engine, Base, SessionLocal
 from . import models
 from . import auth
+from .ai.analyzer import ensure_model, ModelNotTrainedError
 from .routers import (
     auth as auth_router,
     consultations,
@@ -83,6 +84,16 @@ def ensure_demo_admin():
 
 # Run admin check when backend starts
 ensure_demo_admin()
+
+
+@app.on_event("startup")
+def ensure_sentiment_model():
+    """Restore generated model artifacts on fresh, ephemeral deployments."""
+    try:
+        if ensure_model():
+            logger.info("Trained the bundled sentiment model for this deployment.")
+    except ModelNotTrainedError:
+        logger.exception("Sentiment model could not be initialized.")
 
 
 # --------------------------------------------------

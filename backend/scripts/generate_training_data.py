@@ -130,6 +130,11 @@ EXTRA_NEUTRAL = [
     "Please share the contact details of the nodal officer.",
     "Can the application be withdrawn after submission?",
     "What format should supporting documents be uploaded in?",
+    "Government should increase capitalization.",
+    "The government should increase capitalization requirements.",
+    "Capitalization requirements should be reviewed by the government.",
+    "The government should consider increasing capitalization support.",
+    "Businesses should be given clear guidelines on capitalization requirements.",
 ]
 
 

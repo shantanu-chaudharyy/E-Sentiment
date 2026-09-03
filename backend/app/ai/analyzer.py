@@ -17,6 +17,7 @@ The model is loaded lazily and cached in-process. If no trained model is
 found on disk, a clear error is raised so the API layer can surface a
 meaningful message rather than silently faking a result.
 """
+import csv
 import os
 from .sentiment_model import SentimentModel, MODEL_VERSION
 from .keyword_extractor import extract_keywords
@@ -29,14 +30,44 @@ class ModelNotTrainedError(RuntimeError):
     pass
 
 
+def ensure_model() -> bool:
+    """Create the bundled demonstration model when a fresh deploy has none.
+
+    Render (and most container hosts) start each deploy with a new filesystem.
+    Model artifacts are generated files, so they are deliberately not committed.
+    The labeled demo CSV *is* committed, which lets the API restore the model
+    automatically on first startup.
+    """
+    required_artifacts = ("vectorizer.joblib", "classifier.joblib", "meta.json")
+    if all(os.path.exists(os.path.join(_MODEL_DIR, artifact)) for artifact in required_artifacts):
+        return False
+
+    data_path = os.path.join(os.path.dirname(__file__), "..", "..", "data", "training_data.csv")
+    if not os.path.exists(data_path):
+        raise ModelNotTrainedError(
+            "Sentiment model and training data are both unavailable. "
+            "Deploy backend/data/training_data.csv or train the model before starting the API."
+        )
+
+    with open(data_path, newline="", encoding="utf-8") as csv_file:
+        rows = list(csv.DictReader(csv_file))
+
+    texts = [row["text"] for row in rows if row.get("text") and row.get("label")]
+    labels = [row["label"] for row in rows if row.get("text") and row.get("label")]
+    if not texts:
+        raise ModelNotTrainedError("Training data contains no labeled text rows.")
+
+    model, metrics = SentimentModel.train(texts, labels)
+    model.save(_MODEL_DIR, metrics=metrics)
+    return True
+
+
 def _get_model() -> SentimentModel:
     global _model_cache
     if _model_cache is None:
-        vectorizer_path = os.path.join(_MODEL_DIR, "vectorizer.joblib")
-        if not os.path.exists(vectorizer_path):
-            raise ModelNotTrainedError(
-                "Sentiment model not found. Run scripts/train_model.py first."
-            )
+        required_artifacts = ("vectorizer.joblib", "classifier.joblib", "meta.json")
+        if not all(os.path.exists(os.path.join(_MODEL_DIR, artifact)) for artifact in required_artifacts):
+            ensure_model()
         _model_cache = SentimentModel.load(_MODEL_DIR)
     return _model_cache
 
