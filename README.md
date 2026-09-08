@@ -1,3 +1,5 @@
+ https://e-sentiment.onrender.com/docs
+ https://e-sentiment-frontend.onrender.com/
 # E-Sentiment — AI-Powered Sentiment Analysis for E-Consultation Comments
 
 Prototype built for **Smart India Hackathon problem statement SIH25035**
