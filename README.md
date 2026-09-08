@@ -1,228 +1,754 @@
- https://e-sentiment.onrender.com/docs
- https://e-sentiment-frontend.onrender.com/
+
+
 # E-Sentiment — AI-Powered Sentiment Analysis for E-Consultation Comments
 
-Prototype built for **Smart India Hackathon problem statement SIH25035**
-("Sentiment analysis of comments received through E-consultation module"),
-Ministry of Corporate Affairs.
+**Smart India Hackathon — SIH25035**
+**Problem Statement:** Sentiment analysis of comments received through E-consultation module
+**Ministry:** Ministry of Corporate Affairs
 
-This is a **working full-stack prototype**: a citizen submits a comment on a
-published consultation → the comment is stored in SQLite → it is sent to a
-trained TF-IDF + Logistic Regression model → the predicted sentiment
-(Positive / Negative / Neutral) and confidence score are stored → an admin
-dashboard reads live statistics from the database and lets analysts search,
-filter, batch-analyze, and export reports.
+E-Sentiment is a full-stack AI-powered platform that automatically analyzes citizen comments submitted through government e-consultation processes.
 
-Nothing in the dashboard or comment list is hardcoded — every number comes
-from a real API call to a real SQLite database, and every sentiment label
-comes from a real trained model.
+A citizen submits a comment on a published consultation → the comment is stored in SQLite → it is analyzed by a trained TF-IDF + Logistic Regression model → the predicted sentiment (**Positive / Negative / Neutral**) and confidence score are stored → administrators can monitor, search, filter, analyze, and export the results through a live dashboard.
+
+This is a working full-stack prototype with a real deployed frontend, backend API, database, and trained machine-learning model.
 
 ---
 
-## 1. Project structure
+## 🌐 Live Demo
+
+### Frontend
+
+**E-Sentiment Web Application**
+
+https://e-sentiment-frontend.onrender.com/
+
+### Backend API
+
+**FastAPI Backend & Interactive API Documentation**
+
+https://e-sentiment.onrender.com/docs
+
+The backend provides interactive Swagger API documentation where all available API endpoints can be explored and tested.
+
+---
+
+## 🔐 Demo Admin Credentials
+
+```text
+Email:    admin@esentiment.local
+Password: admin123
+````
+
+ Use these credentials to access the admin dashboard and explore the analytics features.
+
+---
+
+ ## 🚀 Key Features
+
+ ### Citizen Portal
+
+ - Browse published consultations
+- View consultation details
+- Submit comments and feedback
+- Automatic AI sentiment analysis
+- Positive / Negative / Neutral classification
+- Confidence score for every prediction
+- Real-time submission and analysis through the backend API
+
+ ### Admin Dashboard
+
+ - Secure JWT authentication
+- Live dashboard statistics
+- Total comments and consultation statistics
+- Sentiment distribution
+- Sentiment trends
+- Consultation-wise sentiment analysis
+- Search and filter comments
+- View complete comment analysis
+- AI-powered text analyzer
+- Batch CSV sentiment analysis
+- Keyword extraction
+- Model performance metrics
+- Generate reports
+- Export comment data as CSV
+
+---
+
+ ## 🤖 AI Architecture
+
+ The sentiment analysis pipeline is built using traditional and explainable machine-learning techniques.
+
+```
+Citizen Comment
+       ↓
+Text Cleaning
+       ↓
+Tokenization
+       ↓
+Stopword Removal
+       ↓
+Lemmatization
+       ↓
+TF-IDF Vectorization
+       ↓
+Logistic Regression
+       ↓
+Sentiment + Confidence Score
+       ↓
+SQLite Database
+       ↓
+Admin Dashboard
+```
+
+ ### Model Configuration
+
+ - **Model:** TF-IDF + Logistic Regression
+- **TF-IDF Features:** Up to 3,000
+- **N-grams:** Unigrams + Bigrams
+- **Classifier:** Logistic Regression
+- **Class Weighting:** Balanced
+- **Model Version:** `tfidf-logreg-v1.0`
+
+ The complete AI pipeline is exposed through a single entry point:
+
+```
+analyze_text(text)
+```
+
+ This makes the AI layer modular and replaceable. The current TF-IDF + Logistic Regression model can later be replaced with BERT, DistilBERT, IndicBERT, or another Hugging Face Transformer model without changing the rest of the application.
+
+---
+
+ ## 📊 Model Evaluation
+
+ The model is evaluated using a stratified 80/20 train-test split.
+
+ Current prototype evaluation:
+
+```
+Accuracy : 99.1%
+F1 Score : 0.991
+```
+
+ The system also calculates:
+
+ - Accuracy
+- Precision
+- Recall
+- F1 Score
+- Confusion Matrix
+
+ These metrics are generated during model training and are not hardcoded into the dashboard.
+
+ > **Note:** The current model is trained on a small synthetic demonstration dataset. The reported metrics therefore represent prototype performance and should not be treated as production performance on real citizen feedback.
+
+---
+
+ ## 🧠 Keyword Extraction
+
+ E-Sentiment also provides keyword extraction using the fitted TF-IDF vocabulary and IDF weights.
+
+ This allows administrators to identify important words and phrases appearing across citizen feedback.
+
+ The same TF-IDF representation used by the sentiment classifier is reused for keyword extraction, ensuring that the keywords shown to administrators are based on the same statistical representation used by the classifier.
+
+---
+
+ ## 🏗️ System Architecture
+
+```
+                         ┌─────────────────────┐
+                         │     Citizen/User     │
+                         └──────────┬──────────┘
+                                    │
+                                    ▼
+                         ┌─────────────────────┐
+                         │ React + TypeScript   │
+                         │     Frontend         │
+                         └──────────┬──────────┘
+                                    │ REST API
+                                    ▼
+                         ┌─────────────────────┐
+                         │   FastAPI Backend   │
+                         ├─────────────────────┤
+                         │ Authentication      │
+                         │ Consultations       │
+                         │ Comments            │
+                         │ AI Analysis         │
+                         │ Dashboard           │
+                         │ Reports             │
+                         └────────┬──────┬──────┘
+                                  │      │
+                    ┌─────────────┘      └──────────────┐
+                    ▼                                   ▼
+          ┌──────────────────┐                 ┌─────────────────┐
+          │   AI / ML Layer  │                 │ SQLite Database │
+          ├──────────────────┤                 ├─────────────────┤
+          │ Preprocessing    │                 │ Users           │
+          │ TF-IDF           │                 │ Consultations   │
+          │ Logistic Reg.    │                 │ Comments        │
+          │ Keywords         │                 │ Sentiments      │
+          └──────────────────┘                 │ Reports         │
+                                               └─────────────────┘
+```
+
+---
+
+ ## 📁 Project Structure
 
 ```
 e-sentiment/
+│
 ├── backend/
 │   ├── app/
-│   │   ├── main.py            FastAPI app, CORS, router wiring
-│   │   ├── database.py        SQLAlchemy engine/session (SQLite)
-│   │   ├── models.py          ORM tables: users, consultations, comments,
-│   │   │                      sentiment_results, reports
-│   │   ├── schemas.py         Pydantic request/response models
-│   │   ├── auth.py            JWT + bcrypt password hashing
+│   │   ├── main.py
+│   │   ├── database.py
+│   │   ├── models.py
+│   │   ├── schemas.py
+│   │   ├── auth.py
+│   │   │
 │   │   ├── ai/
-│   │   │   ├── preprocessing.py     clean/tokenize/stopword/lemmatize
-│   │   │   ├── sentiment_model.py   TF-IDF + Logistic Regression wrapper
-│   │   │   ├── keyword_extractor.py TF-IDF-ranked keyword extraction
-│   │   │   └── analyzer.py          analyze_text() — the single AI entrypoint
+│   │   │   ├── preprocessing.py
+│   │   │   ├── sentiment_model.py
+│   │   │   ├── keyword_extractor.py
+│   │   │   └── analyzer.py
+│   │   │
 │   │   └── routers/
-│   │       ├── auth.py, consultations.py, comments.py,
-│   │       └── analyze.py, dashboard.py, reports.py
+│   │       ├── auth.py
+│   │       ├── consultations.py
+│   │       ├── comments.py
+│   │       ├── analyze.py
+│   │       ├── dashboard.py
+│   │       └── reports.py
+│   │
 │   ├── scripts/
-│   │   ├── generate_training_data.py   builds a synthetic training set
-│   │   ├── train_model.py              trains + evaluates the model
-│   │   └── seed_data.py                seeds demo admin/consultations/comments
-│   ├── data/                    training_data.csv, esentiment.db (generated)
-│   ├── model/                   trained model artifacts + metrics.json
+│   │   ├── generate_training_data.py
+│   │   ├── train_model.py
+│   │   └── seed_data.py
+│   │
+│   ├── data/
+│   ├── model/
 │   └── requirements.txt
 │
-├── frontend/                    React + TypeScript + Vite + Tailwind CSS
+├── frontend/
 │   └── src/
-│       ├── api/client.ts        typed Axios client for every endpoint
-│       ├── context/             AuthContext, ToastContext
-│       ├── components/          layouts, sentiment badge, confidence gauge…
+│       ├── api/
+│       │   └── client.ts
+│       ├── context/
+│       ├── components/
 │       └── pages/
-│           ├── public/          Landing, Consultations, ConsultationDetail
-│           └── admin/           Login, Dashboard, ConsultationManagement,
-│                                 CommentsManagement, AIAnalyzer, Insights,
-│                                 Reports, Settings
+│           ├── public/
+│           └── admin/
 │
-├── documentation/                architecture notes (see below)
+├── documentation/
 └── README.md
 ```
 
 ---
 
-## 2. Running the backend
+ ## 🔌 API Endpoints
 
-```bash
+ | Method | Endpoint | Description |
+| --- | --- | --- |
+| POST | `/api/auth/login` | Login and receive JWT |
+| GET | `/api/auth/me` | Get current authenticated user |
+| GET | `/api/consultations` | List consultations |
+| POST | `/api/consultations` | Create consultation |
+| PUT | `/api/consultations/{id}` | Update consultation |
+| DELETE | `/api/consultations/{id}` | Delete consultation |
+| POST | `/api/comments` | Submit comment and analyze sentiment |
+| GET | `/api/comments` | Search, filter and paginate comments |
+| GET | `/api/comments/{id}` | Get complete comment details |
+| POST | `/api/analyze` | Analyze text using AI |
+| POST | `/api/analyze/batch` | Bulk analyze CSV comments |
+| GET | `/api/dashboard/stats` | Get live dashboard statistics |
+| GET | `/api/dashboard/trends` | Get sentiment trends |
+| GET | `/api/dashboard/by-consultation` | Sentiment breakdown by consultation |
+| GET | `/api/dashboard/keywords` | Get important corpus keywords |
+| POST | `/api/reports/generate` | Generate analytical report |
+| GET | `/api/reports/export/csv` | Export comments as CSV |
+| GET | `/api/reports/model-metrics` | Get model metrics |
+
+ ### Interactive API Documentation
+
+ https://e-sentiment.onrender.com/docs
+
+---
+
+ ## 🧪 Demo Flow
+
+ ### 1\. Open the Application
+
+ Visit:
+
+ https://e-sentiment-frontend.onrender.com/
+
+ Go to:
+
+```
+Home → Browse Open Consultations
+```
+
+ Open:
+
+```
+New Small Business Compliance Policy 2026
+```
+
+ Submit:
+
+```
+This policy will greatly help small businesses and make compliance easier.
+```
+
+ The comment is sent to the backend and automatically analyzed by the trained sentiment model.
+
+ Expected result:
+
+```
+Sentiment: Positive
+Confidence: High
+```
+
+---
+
+ ### 2\. Open the Admin Dashboard
+
+ Sign in using:
+
+```
+Email: admin@esentiment.local
+Password: admin123
+```
+
+ The dashboard retrieves live information from the database.
+
+ It displays:
+
+ - Total comments
+- Sentiment distribution
+- Consultation statistics
+- Sentiment trends
+- Consultation-wise sentiment breakdown
+
+---
+
+ ### 3\. View Comment Details
+
+ Navigate to the Comments section and find the submitted comment.
+
+ Administrators can view:
+
+ - Original comment
+- Processed text
+- Sentiment
+- Confidence score
+- Extracted keywords
+- Model version
+- Timestamp
+
+---
+
+ ### 4\. Test the AI Analyzer
+
+ Use the AI Analyzer to test custom comments.
+
+ Example negative comment:
+
+```
+The proposed process is too complicated and expensive.
+```
+
+ Expected:
+
+```
+Negative
+```
+
+ Example neutral comment:
+
+```
+Please clarify which documents are required.
+```
+
+ Expected:
+
+```
+Neutral
+```
+
+---
+
+ ### 5\. Explore Insights
+
+ The Insights section provides:
+
+ - Keyword frequencies
+- Sentiment trends
+- Sentiment distribution
+- Accuracy
+- Precision
+- Recall
+- F1 Score
+
+---
+
+ ### 6\. Generate Reports
+
+ The Reports section allows administrators to:
+
+ - Generate overall reports
+- Generate consultation-specific reports
+- Export comment data
+- Download CSV reports
+
+---
+
+ ## 💾 Database
+
+ The prototype uses SQLite for simplicity and portability.
+
+ The database contains five primary tables:
+
+```
+users
+   │
+   ├── consultations
+   │
+   └── comments
+           │
+           └── sentiment_results
+
+reports
+```
+
+ ### Database Tables
+
+ - `users`
+- `consultations`
+- `comments`
+- `sentiment_results`
+- `reports`
+
+ Foreign-key relationships connect users, consultations, comments, sentiment results, and reports.
+
+---
+
+ ## 🔐 Authentication & Security
+
+ The prototype implements:
+
+ - JWT authentication
+- bcrypt password hashing
+- Protected admin endpoints
+- Role-aware access structure
+- Passwords stored as secure hashes
+- Authenticated administrative operations
+
+ For production deployment, additional security hardening should be implemented.
+
+---
+
+ ## 🛠️ Technology Stack
+
+ ### Frontend
+
+ - React
+- TypeScript
+- Vite
+- Tailwind CSS
+- Axios
+
+ ### Backend
+
+ - Python
+- FastAPI
+- SQLAlchemy
+- Pydantic
+- JWT
+- bcrypt
+
+ ### AI / NLP
+
+ - scikit-learn
+- TF-IDF
+- Logistic Regression
+- NLP preprocessing
+- TF-IDF keyword extraction
+
+ ### Database
+
+ - SQLite
+
+ ### Deployment
+
+ - Render
+
+---
+
+ ## 💻 Running Locally
+
+ ### Backend
+
+```
 cd backend
+
 python3 -m venv venv
-source venv/bin/activate          # Windows: venv\Scripts\activate
+source venv/bin/activate
+```
+
+ For Windows:
+
+```
+venv\Scripts\activate
+```
+
+ Install dependencies:
+
+```
 pip install -r requirements.txt
+```
 
-# 1. Generate the demonstration training dataset
+ Generate the demonstration training dataset:
+
+```
 python scripts/generate_training_data.py
+```
 
-# 2. Train the sentiment model (writes backend/model/*.joblib + metrics.json)
+ Train the model:
+
+```
 python scripts/train_model.py
+```
 
-# 3. Seed demo admin account, 3 consultations, ~47 demo comments
+ Seed demo data:
+
+```
 python scripts/seed_data.py
+```
 
-# 4. Start the API
+ Start the backend:
+
+```
 uvicorn app.main:app --reload --port 8000
 ```
 
-The API is now live at `http://localhost:8000` (interactive docs at `/docs`).
+ Backend:
 
-## 3. Running the frontend
+```
+http://localhost:8000
+```
 
-```bash
+ Interactive API documentation:
+
+```
+http://localhost:8000/docs
+```
+
+---
+
+ ## 🎨 Running the Frontend Locally
+
+```
 cd frontend
 npm install
 npm run dev
 ```
 
-Vite's dev server proxies `/api/*` to `http://localhost:8000`, so open
-`http://localhost:5173` and everything works with no extra configuration.
-
-For a production build: `npm run build` (outputs to `frontend/dist`), then
-serve `dist/` with any static file server, pointing `/api` at your backend.
-
----
-
-## 4. Demo credentials
+ Open:
 
 ```
-Email:    admin@esentiment.local
-Password: admin123
+http://localhost:5173
 ```
 
-Password is stored as a bcrypt hash, never in plaintext.
+ The Vite development server proxies `/api/*` requests to the local FastAPI backend.
+
+ For a production build:
+
+```
+npm run build
+```
+
+ The production frontend is generated in:
+
+```
+frontend/dist
+```
 
 ---
 
-## 5. Demo script (matches the flow used to validate this build)
+ ## 🧪 Testing
 
-1. Open the app → **Home** → **Browse open consultations**.
-2. Open **"New Small Business Compliance Policy 2026"**.
-3. Submit: *"This policy will greatly help small businesses and make
-   compliance easier."*
-4. See the confirmation with the live AI result: **Positive, ~92%**.
-5. Go to **Admin → Sign in** with the demo credentials.
-6. **Dashboard** — totals and charts update to include your new comment.
-7. **Comments** — find your comment, open it, see processed text, keywords,
-   model version, and timestamps.
-8. **AI Analyzer** — paste a negative comment ("The proposed process is too
-   complicated and expensive.") → **Negative**. Paste a question ("Please
-   clarify which documents are required.") → **Neutral**.
-9. **Insights** — keyword frequencies, sentiment trend, and model accuracy /
-   precision / recall / F1 (computed from the held-out test split, not
-   hardcoded).
-10. **Reports** — generate a report (overall or per-consultation) and export
-    the raw comment data as CSV.
+ ### Backend
 
----
+ The following workflows have been tested:
 
-## 6. API endpoints
+ - Authentication
+- Consultation CRUD
+- Comment submission
+- Automatic sentiment analysis
+- Database persistence
+- Dashboard aggregation
+- CSV batch analysis
+- Report generation
+- CSV export
+- Model metrics
+- API responses
 
-| Method | Path | Notes |
-|---|---|---|
-| POST | `/api/auth/login` | returns JWT + user |
-| GET  | `/api/auth/me` | current user |
-| GET/POST/PUT/DELETE | `/api/consultations[/{id}]` | CRUD (admin-only for write) |
-| POST | `/api/comments` | citizen submission → triggers AI analysis synchronously |
-| GET  | `/api/comments` | search/filter/paginate |
-| GET  | `/api/comments/{id}` | full detail incl. sentiment result |
-| POST | `/api/analyze` | admin ad-hoc text analysis |
-| POST | `/api/analyze/batch` | CSV upload → bulk analyze |
-| GET  | `/api/dashboard/stats` | totals + percentages, computed live |
-| GET  | `/api/dashboard/trends` | sentiment counts per day |
-| GET  | `/api/dashboard/by-consultation` | sentiment breakdown per consultation |
-| GET  | `/api/dashboard/keywords` | TF-IDF-ranked corpus keywords |
-| POST | `/api/reports/generate` | writes a JSON report + DB record |
-| GET  | `/api/reports/export/csv` | streams a CSV of all comments |
-| GET  | `/api/reports/model-metrics` | accuracy/precision/recall/F1 |
+ ### Frontend
 
-Full interactive documentation: `http://localhost:8000/docs`.
+ The following have been verified:
+
+ - Production build
+- TypeScript compilation
+- API integration
+- Admin login
+- Dashboard statistics
+- Consultation browsing
+- Comment submission
+- End-to-end AI result display
 
 ---
 
-## 7. AI architecture
+ ## ⚠️ Known Limitations
 
-- **Pipeline**: `clean_text → tokenize → remove_stopwords → lemmatize` (see
-  `backend/app/ai/preprocessing.py`), then `TfidfVectorizer` (unigrams +
-  bigrams, 3000 features) feeding a `LogisticRegression` classifier with
-  balanced class weights.
-- **Model version**: `tfidf-logreg-v1.0` — stored alongside every sentiment
-  result so future model changes are traceable.
-- **Evaluation**: accuracy / precision / recall / F1 and a confusion matrix
-  are computed on a stratified 80/20 train/test split of the actual training
-  data every time `train_model.py` runs — never hardcoded.
-- **Keyword extraction**: reuses the fitted TF-IDF vocabulary/IDF weights so
-  the "important words" shown to admins are the same signal driving the
-  classifier — no separate keyword model to keep in sync.
-- **Swappable by design**: `analyzer.py` exposes a single `analyze_text(text)`
-  function. Everything else in the backend calls only that function, so the
-  TF-IDF+LogReg model can be replaced by BERT/DistilBERT/any Hugging Face
-  Transformers model by rewriting `sentiment_model.py` alone.
+ This project is a working prototype designed for demonstration and hackathon purposes.
 
-## 8. Database schema
+ ### Training Dataset
 
-SQLite, 5 tables with foreign keys: `users`, `consultations`, `comments`
-(FK → consultations, users), `sentiment_results` (1:1 FK → comments),
-`reports` (FK → consultations, nullable for overall reports). See
-`backend/app/models.py` for the SQLAlchemy definitions.
+ The current model is trained on approximately 1,100 synthetically generated examples.
+
+ A production implementation should use a significantly larger and diverse human-labeled dataset containing real citizen feedback.
+
+ ### Database
+
+ SQLite is used for prototype simplicity.
+
+ A production deployment should use a scalable database such as PostgreSQL or MySQL.
+
+ ### Synchronous AI Processing
+
+ AI analysis currently runs synchronously during comment submission.
+
+ For high-volume deployments, AI processing should be moved to an asynchronous job queue such as Celery or RQ.
+
+ ### Public Submission Protection
+
+ The prototype currently does not include:
+
+ - Rate limiting
+- CAPTCHA
+- Advanced spam protection
+- Advanced abuse prevention
+
+ ### CORS
+
+ CORS is permissive for prototype/development convenience.
+
+ Production deployment should restrict allowed origins to trusted frontend domains.
 
 ---
 
-## 9. Testing performed
+ ## 🔮 Future Improvements
 
-- Backend: trained and evaluated the model (99.1% accuracy / 0.991 F1 on
-  held-out data); verified via `curl` that every endpoint listed above
-  returns correct data, including auth, CRUD, submission → AI analysis →
-  storage, dashboard aggregation, CSV batch upload, report generation, and
-  CSV export.
-- Verified the exact three example sentences from the problem statement
-  return Positive/Negative/Neutral as expected, with confidence scores in
-  the same range described in the brief.
-- Frontend: `npm run build` succeeds with no TypeScript errors; verified via
-  the Vite dev server that `/api/*` calls are correctly proxied to the
-  backend and that login, dashboard stats, and comment submission work
-  end-to-end through the browser-facing API.
+ - Replace TF-IDF + Logistic Regression with DistilBERT or IndicBERT
+- Add multilingual and regional-language support
+- Support Hindi and other Indian languages
+- Add asynchronous AI processing
+- Add scalable batch processing
+- Migrate from SQLite to PostgreSQL
+- Add advanced role-based access control
+- Introduce Analyst and Admin roles
+- Add audit logging
+- Add spam and toxicity detection
+- Add duplicate comment detection
+- Add topic classification
+- Add emotion classification
+- Add advanced consultation-level insights
+- Add real-time analytics
+- Add model monitoring
+- Add continuous model retraining
 
-## 10. Known limitations
+---
 
-- The sentiment model is trained on a small, synthetically generated
-  demonstration dataset (~1,100 rows) — real deployment would need a much
-  larger, human-labeled corpus of actual citizen feedback.
-- SQLite is used for prototype simplicity; a production deployment should
-  move to PostgreSQL/MySQL.
-- AI analysis runs synchronously on submission; a production system with
-  high comment volume should move this to a background task queue
-  (Celery/RQ) so submission latency doesn't scale with model inference time.
-- No rate limiting or CAPTCHA on public comment submission.
-- CORS is fully open (`*`) for local prototype convenience — restrict this
-  in any real deployment.
+ ## 🎯 Why E-Sentiment?
 
-## 11. Future improvements
+ Government e-consultation platforms can receive large volumes of citizen feedback. Manually reviewing and categorizing every comment can be time-consuming and difficult to scale.
 
-- Swap TF-IDF + Logistic Regression for a fine-tuned DistilBERT/IndicBERT
-  model (the `ai/` module is already isolated for this).
-- Add multi-language support for regional-language comments.
-- Add an async job queue for batch CSV analysis on large files.
-- Add role-based permissions distinguishing "analyst" (read/analyze) from
-  "admin" (also manage consultations/users).
-- Add audit logging for consultation edits and deletions.
+ E-Sentiment provides an AI-assisted workflow that helps administrators:
+
+```
+Collect
+   ↓
+Analyze
+   ↓
+Classify
+   ↓
+Understand
+   ↓
+Report
+```
+
+ The platform enables administrators to quickly understand overall public sentiment, identify important discussion topics, monitor sentiment trends, and inspect individual citizen responses.
+
+ The modular architecture also allows the current ML model to evolve into a more advanced multilingual Transformer-based solution as real-world labeled data becomes available.
+
+---
+
+ ## 🏆 Smart India Hackathon
+
+ This project was developed for:
+
+```
+Smart India Hackathon
+Problem Statement: SIH25035
+
+Sentiment analysis of comments received through
+E-consultation module
+
+Ministry of Corporate Affairs
+```
+
+ The solution demonstrates an end-to-end implementation:
+
+```
+Citizen Feedback
+       ↓
+Web Application
+       ↓
+REST API
+       ↓
+NLP / Machine Learning
+       ↓
+Database
+       ↓
+Analytics Dashboard
+       ↓
+Reports & Export
+```
+
+---
+
+ ## 🌐 Live Links
+
+ ### Frontend
+
+ https://e-sentiment-frontend.onrender.com/
+
+ ### Backend API Documentation
+
+ https://e-sentiment.onrender.com/docs
+
+---
+
+ ## 📌 Project Status
+
+ **Working Full-Stack Prototype — Smart India Hackathon SIH25035**
+
+ The deployed application demonstrates the complete citizen-to-administration workflow using a live frontend, FastAPI backend, SQLite database, and trained sentiment-analysis model.
+
+ **Built with React, TypeScript, FastAPI, Python, SQLite, scikit-learn, TF-IDF and Logistic Regression.**
+
+```
+
+```
