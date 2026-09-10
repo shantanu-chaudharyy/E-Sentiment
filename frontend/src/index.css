@@ -37,11 +37,13 @@
 
 html {
   font-family: var(--font-sans);
+  scroll-behavior: smooth;
 }
 
 body {
   background-color: var(--color-paper-50);
   color: var(--color-ink-900);
+  -webkit-font-smoothing: antialiased;
 }
 
 .font-display {
@@ -62,12 +64,51 @@ body {
   scrollbar-color: var(--color-ink-200) transparent;
 }
 
+/* Glassmorphism & Modern Cards */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(230, 234, 240, 0.8);
+}
+
+.glass-panel-dark {
+  background: rgba(15, 37, 68, 0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.card-hover-effect {
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.card-hover-effect:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px -5px rgba(15, 37, 68, 0.08), 0 8px 10px -6px rgba(15, 37, 68, 0.04);
+}
+
+.gradient-text-teal {
+  background: linear-gradient(135deg, var(--color-ink-900) 30%, var(--color-teal-600) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
 @keyframes fade-in {
-  from { opacity: 0; transform: translateY(4px); }
+  from { opacity: 0; transform: translateY(6px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
+@keyframes pulse-subtle {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
 .animate-fade-in {
-  animation: fade-in 0.25s ease-out;
+  animation: fade-in 0.3s ease-out forwards;
+}
+
+.animate-pulse-subtle {
+  animation: pulse-subtle 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -76,3 +117,4 @@ body {
     transition-duration: 0.01ms !important;
   }
 }
+

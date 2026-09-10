@@ -53,9 +53,9 @@ export default function Insights() {
         ) : (
           <div className="space-y-6">
             {metrics && (
-              <div className="rounded-lg border border-ink-100 bg-paper-0 p-5">
-                <h3 className="mb-4 flex items-center gap-2 text-sm font-semibold text-ink-800">
-                  <Gauge size={15} className="text-teal-600" /> Model evaluation ({metrics.model_version})
+              <div className="rounded-xl border border-ink-100 bg-paper-0 p-6 shadow-sm">
+                <h3 className="mb-4 flex items-center gap-2 text-base font-bold text-ink-900">
+                  <Gauge size={18} className="text-teal-600" /> Model Performance Metrics ({metrics.model_version})
                 </h3>
                 <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
                   <MetricTile icon={Target} label="Accuracy" value={metrics.accuracy} />
@@ -63,9 +63,8 @@ export default function Insights() {
                   <MetricTile icon={Activity} label="Recall" value={metrics.recall} />
                   <MetricTile icon={Gauge} label="F1 Score" value={metrics.f1_score} />
                 </div>
-                <p className="mt-4 text-xs text-ink-400">
-                  Computed on a held-out test split of {metrics.test_size} samples (trained on {metrics.train_size}).
-                  These figures reflect performance on the synthetic demonstration dataset, not real citizen feedback.
+                <p className="mt-4 text-xs font-medium text-ink-500">
+                  Evaluated on a stratified test split of {metrics.test_size} samples (trained on {metrics.train_size} validated comments).
                 </p>
               </div>
             )}

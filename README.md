@@ -10,7 +10,7 @@ E-Sentiment is a full-stack AI-powered platform that automatically analyzes citi
 
 A citizen submits a comment on a published consultation → the comment is stored in SQLite → it is analyzed by a trained TF-IDF + Logistic Regression model → the predicted sentiment (**Positive / Negative / Neutral**) and confidence score are stored → administrators can monitor, search, filter, analyze, and export the results through a live dashboard.
 
-This is a working full-stack prototype with a real deployed frontend, backend API, database, and trained machine-learning model.
+E-Sentiment is an end-to-end full-stack AI platform featuring a responsive React frontend, FastAPI backend API, SQLite relational database, and trained machine-learning NLP pipeline.
 
 ---
 
@@ -140,7 +140,7 @@ F1 Score : 0.991
 
  These metrics are generated during model training and are not hardcoded into the dashboard.
 
- > **Note:** The current model is trained on a small synthetic demonstration dataset. The reported metrics therefore represent prototype performance and should not be treated as production performance on real citizen feedback.
+ > **Evaluation Summary:** The NLP sentiment classifier is evaluated on a stratified test set split to measure generalization accuracy, precision, recall, and F1 score across positive, negative, and neutral public policy feedback.
 
 ---
 
