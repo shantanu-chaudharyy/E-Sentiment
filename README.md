@@ -32,6 +32,10 @@ The backend provides interactive Swagger API documentation where all available A
 
 ---
 
+## Presentation
+[E-Sentiment-Presentation.pptx](https://github.com/user-attachments/files/32596358/E-Sentiment-Presentation.pptx)
+
+
 ## 🔐 Demo Admin Credentials
 
 ```text
